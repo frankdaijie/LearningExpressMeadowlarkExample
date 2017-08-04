@@ -1,4 +1,5 @@
 var express = require('express');
+var formidable = require('formidable')
 var fortune = require('./lib/fortune');
 
 var app = express();
@@ -60,6 +61,31 @@ app.post('/process', function(req, res) {
     }
 });
 
+app.get('/contest/vacation-photo', function(req, res) {
+    var now = new Date();
+    res.render('contest/vacation-photo', {
+        year: now.getFullYear(),
+        month: now.getMonth()
+    });
+});
+
+app.post('/contest/vacation-photo/:year/:month', function(req, res) {
+    var form = new formidable.IncomingForm();
+    form.parse(req, function(err, fields, files) {
+        if (err) {
+            return redirect(303, '/error');
+        }
+
+        console.log('received fields:');
+        console.log(fields);
+
+        console.log('received files:');
+        console.log(files);
+
+        res.redirect(303, '/thank-you');
+    });
+});
+
 app.use(function (req, res) {
     res.status(404);
     res.render('404');
@@ -74,4 +100,4 @@ app.use(function (err, req, res, next) {
 app.listen(app.get('port'), function () {
     console.log('Express started on http://localhost' + app.get('port') +
         '; press Ctrl-C to terminate');
-})
+});
